@@ -1,0 +1,55 @@
+import React from 'react';
+import {StyleSheet, View, TextInput} from 'react-native';
+const Asimbox = React.forwardRef((props, ref) => {
+  const handleKeyPress = ({nativeEvent: {key: keyValue}}) => {
+    // console.log(keyValue);
+    if (keyValue === 'Backspace') {
+      props.move('left', props.keyRef);
+    } else {
+    //   props.move('right', props.keyRef);
+    }
+  };
+
+  const [text, setText] = React.useState('');
+
+  return (
+    <View style={styles.innerView}>
+      <TextInput
+        ref={ref}
+        value={text}
+        onChangeText={(txt) => {
+          // Regex Test
+          if(txt.length){
+            props.move('right', props.keyRef);}
+          setText(txt);
+          props.update(txt, props.keyRef);
+        }}
+        onKeyPress={handleKeyPress}
+        maxLength={1}
+        placeholderTextColor="red"
+        keyboardType="numeric"
+        style={styles.inputView}
+      />
+    </View>
+  );
+});
+
+const styles = StyleSheet.create({
+  innerView: {
+    height: 50,
+    width: 50,
+    justifyContent: 'center',
+    flexDirection: 'column',
+  },
+  inputView: {
+    borderRadius: 5,
+    backgroundColor: '#fff',
+    borderWidth: 2,
+    borderColor: '#c4c5c9',
+    alignSelf: 'center',
+    textAlign: 'center',
+    width: 50,
+  },
+});
+
+export default Asimbox;

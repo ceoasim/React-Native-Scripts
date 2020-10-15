@@ -1,0 +1,315 @@
+CustomLibrary:
+
+import React from 'react';
+
+import {
+  Text,
+  TextInput,
+  StyleSheet,
+  ScrollView,
+  TouchableOpacity,
+  View,
+  StatusBar,
+} from 'react-native';
+
+import SmoothPinCodeInput from 'react-native-smooth-pincode-input';
+
+import Icon from 'react-native-vector-icons/AntDesign';
+import Asimbox from './Asimbox';
+
+export default class First extends React.Component {
+  pinInput = React.createRef();
+
+  //   _checkCode = (code) => {
+  //     if (code != '1234') {
+  //       this.pinInput.current.shake().then(() => this.setState({code: ''}));
+  //     }
+  //   };
+  constructor(props) {
+    super(props);
+    this.state = {
+      title: false,
+      code: '',
+      // otp1: '',
+      // otp2: '',
+      // otp3: '',
+      otp: [],
+      count: 70,
+      mints: 0,
+      secs: 0,
+    };
+    this.a1 = React.createRef();
+    this.a2 = React.createRef();
+    this.a3 = React.createRef();
+    this.a4 = React.createRef();
+    // this.handleKeyPress0 = this.handleKeyPress0.bind(this);
+    // this.handleKeyPress1 = this.handleKeyPress1.bind(this);
+    // this.handleKeyPress2 = this.handleKeyPress2.bind(this);
+    this.boxes = Array.apply(null, Array(4)).map(function () {});
+
+    this.updateOTP = this.updateOTP.bind(this);
+  }
+
+  // handleKeyPress0({ nativeEvent: { key: keyValue } }) {
+  //     console.log(keyValue)
+  //     if (keyValue === 'Backspace') {
+  //         this.a1.current.focus();
+  //     } else {
+  //         this.a2.current.focus();
+  //     }
+  // }
+  // handleKeyPress1({ nativeEvent: { key: keyValue } }) {
+  //     console.log(keyValue);
+  //     if (keyValue === 'Backspace') {
+  //         this.a1.current.focus();
+  //     } else {
+  //         this.a3.current.focus();
+  //     }
+  // }
+
+  // handleKeyPress2({ nativeEvent: { key: keyValue } }) {
+  //     if (keyValue === 'Backspace') {
+  //         this.a2.current.focus();
+  //     } else {
+  //         this.a3.current.blur();
+  //     }
+  // }
+  updateOTP(value, index) {
+    var otp = this.state.otp;
+    otp[index] = value;
+    this.setState({otp});
+  }
+  mod() {
+    const {count} = this.state;
+    const sec = count % 60;
+    const res = count - sec;
+    const mint = res / 60;
+    return {
+      mints: mint,
+      secs: sec,
+    };
+  }
+
+  changecolor = () => {
+    this.setState({title: true});
+    console.log('asim');
+  };
+  componentDidMount() {
+    this.myInterval = setInterval(() => {
+      if (this.state.count === 0) {
+        clearInterval(this.myInterval);
+        return;
+      }
+      this.setState({
+        count: this.state.count - 1,
+      });
+    }, 1000);
+  }
+  componentWillUnmount() {
+    clearInterval(this.myInterval);
+  }
+  moveTextInput = (direction, index) => {
+    const key = `a${index + 1}`; // a1
+
+    switch (key) {
+      case 'a1': // 0
+        if (direction === 'left') {
+        } else if (direction === 'right') {
+          // console.log( this[`a${(index + 2)}`]);
+          this[`a${index + 2}`].current.focus();
+        }
+        break;
+      case 'a2': // 1
+      case 'a3': // 2
+        if (direction === 'left') {
+          this[`a${index}`].current.focus();
+        } else if (direction === 'right') {
+          this[`a${index + 2}`].current.focus();
+        }
+        break;
+      case 'a4': // 3
+        if (direction === 'left') {
+          this[`a${index}`].current.focus();
+        } else if (direction === 'right') {
+          this[`a${index + 1}`].current.blur();
+        }
+        break;
+
+      default:
+        break;
+    }
+
+    console.log(this.state.otp.join(''));
+  };
+  render() {
+    const {code, title} = this.state;
+    const time = this.mod();
+    return (
+      <View style={{flex: 1, backgroundColor: '#FFF'}}>
+        <StatusBar barStyle="dark-content" backgroundColor="#FFF" />
+        <View style={{marginHorizontal: 25}}>
+          <View
+            style={{marginTop: 31, flexDirection: 'row', alignItems: 'center'}}>
+            <Icon
+              size={19}
+              name="arrowleft"
+              onPress={() => {
+                this.props.navigation.goBack();
+              }}
+            />
+            <Text
+              style={{
+                fontFamily: 'Montserrat-Regular',
+                fontSize: 22,
+                marginLeft: 10,
+              }}>
+              Enter Verification Code
+            </Text>
+          </View>
+        </View>
+        <ScrollView style={{marginHorizontal: 25}}>
+          <Text
+            style={{
+              marginTop: 27,
+              marginLeft: 28,
+              fontSize: 14,
+              fontFamily: 'Montserrat',
+            }}>
+            We have sent an OTP to +92 30787854643
+          </Text>
+          <View style={{alignSelf: 'center', marginTop: 68}}>
+            <SmoothPinCodeInput
+              ref={this.pinInput}
+              borderColor="gray"
+              cellStyle={[
+                {
+                  borderColor: '#C4C5C9',
+                  backgroundColor: '#fff',
+                  borderWidth: 1,
+                  borderRadius: 6,
+                },
+                shadow,
+              ]}
+              cellStyleFocused={{borderColor: '#C4C5C9', borderWidth: 1}}
+              value={code}
+              cellSpacing={8}
+              onTextChange={(code) => this.setState({code})}
+              onBackspace={this._focusePrevInput}
+              codeLength={5}
+            />
+          </View>
+          <View style={{flexDirection: 'row', justifyContent: 'space-evenly'}}>
+            {this.boxes.map((value, index) => (
+              <Asimbox
+                key={index}
+                ref={this[`a${index + 1}`]}
+                keyRef={index}
+                update={this.updateOTP}
+                move={this.moveTextInput}
+              />
+            ))}
+            {/* <View style={styles.Mainbox}>
+                            <TextInput
+                                autoFocus={true}
+                                ref={this.a1}
+                                onChangeText={(otp1) => {
+                                    this.setState({ otp1 });
+                                }}
+                                onKeyPress={this.handleKeyPress0}
+                                selectionColor={'red'}
+                                maxLength={1}
+                                keyboardType="numeric"
+                                style={styles.box}
+                            />
+                        </View>
+
+                        <View style={styles.Mainbox}>
+                            <TextInput
+                                ref={this.a2}
+                                value={this.state.otp2}
+                                onChangeText={(otp2) => {
+                                    this.setState({ otp2 });
+                                }}
+                                onKeyPress={this.handleKeyPress1}
+                                selectionColor={'red'}
+                                keyboardType="numeric"
+                                maxLength={1}
+                                style={styles.box}
+                            />
+                        </View>
+                        <View style={styles.Mainbox}>
+                            <TextInput
+                                ref={this.a3}
+                                value={this.state.otp3}
+                                onChangeText={(otp3) => {
+                                    this.setState({ otp3 });
+                                }}
+                                onKeyPress={this.handleKeyPress2}
+                                selectionColor={'red'}
+                                maxLength={1}
+                                keyboardType="numeric"
+                                style={styles.box}
+                            />
+                        </View> */}
+          </View>
+        </ScrollView>
+
+        <Text style={{alignSelf: 'center', marginBottom: 22.3, fontSize: 17}}>
+          {time.mints + ':' + time.secs}
+        </Text>
+
+        <View
+          style={{marginBottom: 40, flexDirection: 'row', alignSelf: 'center'}}>
+          <Text
+            style={{
+              fontSize: 14,
+              fontFamily: 'Montserrat-Regular',
+            }}>
+            Didn't receive Code?
+          </Text>
+          <TouchableOpacity onPress={this.changecolor}>
+            <Text
+              style={{
+                marginLeft: 5,
+                fontSize: 14,
+                fontFamily: 'Montserrat-Regular',
+                color: title ? '#C4C5C9' : '#E95F6D',
+              }}>
+              Resend Now
+            </Text>
+          </TouchableOpacity>
+        </View>
+      </View>
+    );
+  }
+}
+const shadow = {
+  shadowColor: '#000',
+  shadowRadius: 10,
+  shadowOpacity: 0.1,
+  elevation: 6,
+  shadowOffset: {
+    width: 0,
+    height: 4,
+  },
+};
+const styles = StyleSheet.create({
+  box: {
+    textAlign: 'center',
+    width: 52,
+    height: 52,
+  },
+  Mainbox: {
+    elevation: 7,
+    borderRadius: 5,
+    borderColor: '#C4C5C9',
+    borderWidth: 1,
+    width: 52,
+    height: 52,
+    backgroundColor: '#FFF',
+    marginTop: 10,
+  },
+});
+
+
+
